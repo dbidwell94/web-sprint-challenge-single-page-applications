@@ -22,3 +22,5 @@ export const ORDER_SCHEMA = yup.object().shape({
     .string()
     .max(255, "You are only allowed 255 characters in this field"),
 });
+
+export const SUBMIT_URL = "https://reqres.in/api/users";

@@ -21,24 +21,43 @@ const Container = styled.div`
       color: red;
       font-size: 1rem;
     }
+    .toppings {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    input {
+      margin-left: 2rem;
+    }
+    button{
+        margin-top: 2rem;
+        width: 100%;
+    }
   }
 `;
 
 export default function Pizza(props) {
-  const { values, onUpdate, errors } = props;
+  const { values, onUpdate, errors, allowSubmit, handleSubmit } = props;
 
-  function handleUpdate(event) {
+  function handleUpdate(event, propName = "") {
     if (event.target.type === "checkbox") {
-        
+      const { name, checked } = event.target;
+      onUpdate(name, checked, true, propName);
     } else {
       const { name, value } = event.target;
       onUpdate(name, value);
     }
   }
 
+  function submit(e){
+    e.preventDefault();
+    handleSubmit();
+  }
+
   return (
     <Container>
-      <form>
+      <form onSubmit={submit}>
         <p className="error">{errors.name}</p>
         <label htmlFor="name">
           Your name:
@@ -73,6 +92,23 @@ export default function Pizza(props) {
             })}
           </select>
         </label>
+        <label htmlFor="toppings" className="toppings">
+          Toppings
+          {Object.keys(values.toppings).map((topping) => {
+            return (
+              <label htmlFor={`toppings${topping}`} key={`toppings${topping}`}>
+                {topping}
+                <input
+                  type="checkbox"
+                  name={topping}
+                  checked={values.toppings[topping]}
+                  onChange={(e) => handleUpdate(e, "toppings")}
+                />
+              </label>
+            );
+          })}
+        </label>
+        <button disabled={!allowSubmit}>Order</button>
       </form>
     </Container>
   );
@@ -82,4 +118,6 @@ Pizza.propTypes = {
   values: propTypes.object,
   onUpdate: propTypes.func,
   errors: propTypes.object,
+  allowSubmit: propTypes.bool,
+  handleSubmit: propTypes.func
 };

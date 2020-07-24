@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { SUBMIT_URL } from "./constants";
+import axios from "axios";
 import styled from "styled-components";
 import * as yup from "yup";
 import { ORDER_SCHEMA } from "./constants";
@@ -38,6 +40,7 @@ const initialOrderErrors = {
 export default function App() {
   const [orderValues, setOrderValues] = useState(initialOrder);
   const [orderErrors, setOrderErrors] = useState(initialOrderErrors);
+  const [allowSubmit, setAllowSubmit] = useState(false);
   const [cart, setCart] = useState([]);
 
   function updateValues(name, value, isCheckbox = false, checkboxTitle = "") {
@@ -60,6 +63,28 @@ export default function App() {
     }
   }
 
+  useEffect(() => {
+    ORDER_SCHEMA.validate(orderValues)
+      .then((res) => {
+        setAllowSubmit(true);
+      })
+      .catch((err) => {
+        setAllowSubmit(false);
+      });
+  }, [orderValues]);
+
+  function handleSubmit() {
+    setAllowSubmit(false);
+    axios
+      .post(SUBMIT_URL, orderValues)
+      .then((res) => {
+        setCart([res.data, ...cart]);
+        setOrderValues(initialOrder);
+        setOrderErrors(initialOrderErrors);
+      })
+      .catch((err) => console.log(err));
+  }
+
   return (
     <Container>
       <Navbar />
@@ -70,6 +95,8 @@ export default function App() {
               values={orderValues}
               onUpdate={updateValues}
               errors={orderErrors}
+              allowSubmit={allowSubmit}
+              handleSubmit={handleSubmit}
             />
           </Route>
           <Route path="/cart">
