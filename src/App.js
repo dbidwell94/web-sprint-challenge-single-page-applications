@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  useHistory,
+} from "react-router-dom";
 import { SUBMIT_URL } from "./constants";
 import axios from "axios";
 import styled from "styled-components";
@@ -41,7 +46,10 @@ export default function App() {
   const [orderValues, setOrderValues] = useState(initialOrder);
   const [orderErrors, setOrderErrors] = useState(initialOrderErrors);
   const [allowSubmit, setAllowSubmit] = useState(false);
+  const [networkError, setNetworkError] = useState('');
   const [cart, setCart] = useState([]);
+
+  const { push } = useHistory();
 
   function updateValues(name, value, isCheckbox = false, checkboxTitle = "") {
     if (!isCheckbox) {
@@ -81,8 +89,12 @@ export default function App() {
         setCart([res.data, ...cart]);
         setOrderValues(initialOrder);
         setOrderErrors(initialOrderErrors);
+        push("/cart");
+        setNetworkError('');
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        setNetworkError(err.message)
+      });
   }
 
   return (
@@ -97,10 +109,11 @@ export default function App() {
               errors={orderErrors}
               allowSubmit={allowSubmit}
               handleSubmit={handleSubmit}
+              networkError={networkError}
             />
           </Route>
           <Route path="/cart">
-            <Cart />
+            <Cart cartItems={cart} />
           </Route>
           <Route path="/">
             <Home />

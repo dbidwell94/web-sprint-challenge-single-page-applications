@@ -12,6 +12,10 @@ const Container = styled.div`
   box-shadow: 0.25rem 0.25rem 0.5rem 0rem black;
   margin-top: 2rem;
   font-size: 1.5rem;
+  .error {
+    color: red;
+    font-size: 2rem;
+  }
   form {
     display: flex;
     flex-direction: column;
@@ -30,15 +34,29 @@ const Container = styled.div`
     input {
       margin-left: 2rem;
     }
-    button{
-        margin-top: 2rem;
-        width: 100%;
+    button {
+      margin-top: 2rem;
+      width: 100%;
+    }
+    label {
+      margin: 0rem 0rem 1.5rem 0rem;
+      input[name="specialInstructions"] {
+        height: auto;
+        word-wrap: break-word;
+      }
     }
   }
 `;
 
 export default function Pizza(props) {
-  const { values, onUpdate, errors, allowSubmit, handleSubmit } = props;
+  const {
+    values,
+    onUpdate,
+    errors,
+    allowSubmit,
+    handleSubmit,
+    networkError,
+  } = props;
 
   function handleUpdate(event, propName = "") {
     if (event.target.type === "checkbox") {
@@ -50,13 +68,14 @@ export default function Pizza(props) {
     }
   }
 
-  function submit(e){
+  function submit(e) {
     e.preventDefault();
     handleSubmit();
   }
 
   return (
     <Container>
+      {networkError && <h2 className="error">{networkError}</h2>}
       <form onSubmit={submit}>
         <p className="error">{errors.name}</p>
         <label htmlFor="name">
@@ -108,7 +127,19 @@ export default function Pizza(props) {
             );
           })}
         </label>
-        <button type='submit' disabled={!allowSubmit}>Order</button>
+        <p className="error">{errors.specialInstructions}</p>
+        <label htmlFor="specialInstructions">
+          Special Instructions
+          <input
+            type="text"
+            name="specialInstructions"
+            value={values.specialInstructions}
+            onChange={handleUpdate}
+          />
+        </label>
+        <button type="submit" disabled={!allowSubmit}>
+          Order
+        </button>
       </form>
     </Container>
   );
@@ -119,5 +150,6 @@ Pizza.propTypes = {
   onUpdate: propTypes.func,
   errors: propTypes.object,
   allowSubmit: propTypes.bool,
-  handleSubmit: propTypes.func
+  handleSubmit: propTypes.func,
+  networkError: propTypes.string,
 };

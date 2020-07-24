@@ -10,16 +10,27 @@ describe("User can enter valules", () => {
     cy.get("#name").type("devin").should("have.value", "devin");
   });
   it("Can type their address", () => {
-    cy.get('#address').type('1234 Something Ln')
-      .should('have.value', '1234 Something Ln');
-  })
+    cy.get("#address")
+      .type("1234 Something Ln")
+      .should("have.value", "1234 Something Ln");
+  });
   it("Can select toppings", () => {
     cy.get('input[name="sausage"]').check();
-    cy.get('input[name="ham"]').check()
-    cy.get('input[name="pineapple"]').check()
-    cy.get('input[name="pepperoni"]').check()
-  })
+    cy.get('input[name="ham"]').check();
+    cy.get('input[name="pineapple"]').check();
+    cy.get('input[name="pepperoni"]').check();
+  });
+  it("Can provide special instructions", () => {
+    cy.get('input[name="specialInstructions"]')
+      .type(
+        "This is a test of the emergency response system. This is only a test"
+      )
+      .should(
+        "contain.value",
+        "This is a test of the emergency response system. This is only a test"
+      );
+  });
   it("Can place the order", () => {
-    cy.get('button[type="submit"]').click()
-  })
+    cy.get('button[type="submit"]').click();
+  });
 });
