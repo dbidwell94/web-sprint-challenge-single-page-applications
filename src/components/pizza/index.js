@@ -108,7 +108,7 @@ export default function Pizza(props) {
             );
           })}
         </label>
-        <button disabled={!allowSubmit}>Order</button>
+        <button type='submit' disabled={!allowSubmit}>Order</button>
       </form>
     </Container>
   );
